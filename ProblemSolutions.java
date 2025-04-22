@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   Julian Casalez / 001
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
@@ -82,8 +82,42 @@ class ProblemSolutions {
                                         prerequisites); 
 
         // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        boolean canFinish = true;
+        boolean[] visited = new boolean[numNodes]; // Visited array for DFS
+        boolean[] inStack = new boolean[numNodes]; // Stack array for DFS
 
+        for (int i = 0; i < numNodes; i++) {
+            if (!visited[i]) {
+                canFinish = dfs(i, visited, inStack, adj); // Perform DFS
+                if (!canFinish) {
+                    break; // Cycle detected, cannot finish all exams
+                }
+            }
+        }
+
+        
+
+        return canFinish;
+
+    }
+
+    // Helper method to perform DFS traversal
+    boolean dfs(int node, boolean[] visited, boolean[] inStack, ArrayList<Integer>[] adj) {
+        visited[node] = true; // Mark the node as visited
+        inStack[node] = true; // Mark the node as in stack
+
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                if (!dfs(neighbor, visited, inStack, adj)) {
+                    return false; // Cycle detected in DFS
+                }
+            } else if (inStack[neighbor]) {
+                return false; // Cycle detected in DFS
+            }
+        }
+
+        inStack[node] = false; // Remove the node from stack
+        return true; // No cycle detected
     }
 
 
@@ -192,7 +226,32 @@ class ProblemSolutions {
 
         // YOUR CODE GOES HERE - you can add helper methods, you do not need
         // to put all code in this method.
-        return -1;
+        
+        boolean[] visited = new boolean[numNodes];
+        int numGroups = 0;
+
+        for (i = 0; i < numNodes; i++) {
+            graph.putIfAbsent(i, new ArrayList<>());
+        }
+
+        for (int k = 0; k < numNodes; k++){
+           if (!visited[k]){
+            numGroups++; // Increment group count
+            depthSearch(k, visited, graph); // Perform DFS to mark all connected nodes
+           }
+        }
+        return numGroups;
+    }
+
+    // Helper method to perform DFS traversal
+    private void depthSearch(int node, boolean[] visited, Map<Integer,List<Integer>> graph){
+        visited[node] = true;
+
+        for (int neighbor : graph.get(node)){
+            if(!visited[neighbor]){
+                depthSearch(neighbor, visited, graph);
+            }
+        }
     }
 
 }
